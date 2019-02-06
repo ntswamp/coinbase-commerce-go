@@ -175,7 +175,6 @@ fmt.Println(len(checkouts))
 
 ## Charges
 [Charges API docs](https://commerce.coinbase.com/docs/api/#charges)
-More examples on how to use charges can be found in the [`examples/resources/charge.js`](examples/resources/charge.js) file
 
 ### Retrieve
 ``` go
@@ -213,11 +212,47 @@ if err != nil {
 fmt.Println(len(charges))
 ```
 
+## Webhooks
+
+### Verify Signature from http.Request
+``` go
+func HandleWebhook(w http.ResponseWriter, r *http.Request) {
+	sharedKey := "your-shared-key"
+	ok, err := VerifyWebhookSignatureFromRequest(sharedKey, r)
+	if err != nil {
+		// handle error
+		panic(err)
+	}
+
+	if !ok {
+		// handle invalid signature
+	}
+}
+```
+
+
+### Verify Signature
+
+``` go
+    sharedKey := "your-shared-key"
+    signature := ""
+    body := []byte("{}")
+    ok, err := VerifyWebhookSignature(sharedKey, signature, body)
+	if err != nil {
+		// handle error
+		panic(err)
+	}
+
+	if !ok {
+		// handle invalid signature
+	}
+
+```
 ## TODOs
 
 - [ ] Add some mock tests, as coinbase-commerce does not currently have a sandbox
 - [ ] Handle pagination properly
-- [ ] Add Webhook signature verification
+- [x] Add Webhook signature verification
 
 License
 ----
