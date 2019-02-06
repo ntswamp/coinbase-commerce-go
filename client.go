@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 )
 
@@ -101,16 +102,33 @@ func (c *CoinbaseClient) request(method, path string, body, result interface{}) 
 	return res, nil
 }
 
-func (c *CoinbaseClient) ListCheckouts() (checkouts []Checkout, err error) {
-	var retrievedCheckouts ListCheckoutsResponse
+func (c *CoinbaseClient) ListCheckouts(p *Pagination) (checkouts []Checkout, err error) {
+	var retrievedCheckouts []Checkout
 
-	_, err = c.request("GET", "/checkouts", nil, &retrievedCheckouts)
+	// TODO: Refactor Cursor logic
+	hasNext := true
+	nextUri := "/checkouts"
+	if p != nil {
+		nextUri = urlWithPagination("/checkouts", p)
+	}
+
+	for hasNext {
+		var listCheckoutsResp ListCheckoutsResponse
+
+		_, err = c.request("GET", nextUri, nil, &listCheckoutsResp)
+		retrievedCheckouts = append(retrievedCheckouts, listCheckoutsResp.Data...)
+		if listCheckoutsResp.Pagination.NextURI != "" {
+			nextUri = uriToPathQuery(listCheckoutsResp.Pagination.NextURI)
+		} else {
+			hasNext = false
+		}
+	}
 
 	if err != nil {
 		return checkouts, err
 	}
 
-	return retrievedCheckouts.Data, nil
+	return retrievedCheckouts, nil
 }
 
 func (c *CoinbaseClient) RetrieveCheckout(checkoutID string) (checkout Checkout, err error) {
@@ -153,16 +171,31 @@ func (c *CoinbaseClient) DeleteCheckout(checkoutID string) error {
 	return err
 }
 
-func (c *CoinbaseClient) ListCharges() (charges []Charge, err error) {
-	var retrievedCharges ListChargesResponse
+func (c *CoinbaseClient) ListCharges(p *Pagination) (charges []Charge, err error) {
+	var retrievedCharges []Charge
+	// TODO: Refactor Cursor logic
+	hasNext := true
+	nextUri := "/charges"
+	if p != nil {
+		nextUri = urlWithPagination("/charges", p)
+	}
 
-	_, err = c.request("GET", "/charges", nil, &retrievedCharges)
+	for hasNext {
+		var listChargesResp ListChargesResponse
+		_, err = c.request("GET", nextUri, nil, &listChargesResp)
+		retrievedCharges = append(retrievedCharges, listChargesResp.Data...)
+		if listChargesResp.Pagination.NextURI != "" {
+			nextUri = uriToPathQuery(listChargesResp.Pagination.NextURI)
+		} else {
+			hasNext = false
+		}
+	}
 
 	if err != nil {
 		return charges, err
 	}
 
-	return retrievedCharges.Data, nil
+	return retrievedCharges, nil
 }
 
 func (c *CoinbaseClient) RetrieveCharge(chargeID string) (charge Charge, err error) {
@@ -212,5 +245,26 @@ func (c *CoinbaseClient) ResolveCharge(chargeID string) (charge Charge, err erro
 	}
 
 	return retrievedCharge.Data, nil
+
+}
+
+func setValueIfNotEmpty(v *url.Values, param, val string) {
+	if val != "" {
+		v.Set(param, val)
+	}
+}
+
+func uriToPathQuery(uri string) string {
+	u, _ := url.Parse(uri)
+	return fmt.Sprintf("%s?%s", u.Path, u.RawQuery)
+}
+
+func urlWithPagination(basePath string, p *Pagination) string {
+	v := url.Values{}
+	setValueIfNotEmpty(&v, "order", p.Order)
+	setValueIfNotEmpty(&v, "starting_after", p.StartingAfter)
+	setValueIfNotEmpty(&v, "ending_before", p.EndingBefore)
+	setValueIfNotEmpty(&v, "limit", strconv.Itoa(p.Limit))
+	return fmt.Sprintf("%s?%s", basePath, v.Encode())
 
 }
