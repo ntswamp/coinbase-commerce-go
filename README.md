@@ -165,7 +165,20 @@ if err != nil {
 ```
 ### List
 ``` go
-checkouts, err := c.ListCheckouts()
+checkouts, err := c.ListCheckouts(nil) // grabs all
+if err != nil {
+    panic("unexpected error: ", err)
+}
+
+fmt.Println(len(checkouts))
+```
+
+#### With Pagination
+``` go
+p := &Pagination{
+		Limit: 50,
+	}
+checkouts, err := c.ListCheckouts(p) 
 if err != nil {
     panic("unexpected error: ", err)
 }
@@ -204,12 +217,26 @@ fmt.Println(charge)
 ```
 ### List
 ``` go
-charges, err := c.ListCharges()
+charges, err := c.ListCharges(nil)
 if err != nil {
     panic(err)
 }
 
 fmt.Println(len(charges))
+```
+
+#### With pagination
+``` go
+p := &Pagination{
+		Limit: 50,
+	}
+charges, err := c.ListCharges(p)
+if err != nil {
+    panic(err)
+}
+
+fmt.Println(len(charges))
+
 ```
 
 ## Webhooks
