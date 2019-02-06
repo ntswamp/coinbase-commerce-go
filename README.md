@@ -53,13 +53,13 @@ Example of handling errors from the API:
 checkoutID := "random-id"
 result, err := c.RetrieveCheckout(checkoutID)
 if err != nil {
-   switch err.(type) {
-   case ResponseError:
-	 responseError, _ := err.(ResponseError)
-     if responseError.IsValidationError() {
-       log.Printf("Provided checkout ID: %s is invalid: %s \n", checkoutID, responseError.ReturnedError.Message)
-     }
-   }
+    switch err.(type) {
+    case ResponseError:
+        responseError, _ := err.(ResponseError)
+        if responseError.IsValidationError() {
+            log.Printf("Provided checkout ID: %s is invalid: %s \n", checkoutID, responseError.ReturnedError.Message)
+        }
+    }
 }
 ```
 
@@ -91,88 +91,86 @@ if err != nil {
 
 ### Create
 ``` go
-	checkoutData := Checkout{
-		Name:        "The Sovereign Individual",
-		Description: "Mastering the Transition to the Information Age",
-		PricingType: FixedPrice,
-		LocalPrice: LocalPrice{
-			Amount:   "100.00",
-			Currency: "USD",
-		},
-		RequestedInfo: []string{"name", "email"},
-	}
+checkoutData := Checkout{
+    Name:        "The Sovereign Individual",
+    Description: "Mastering the Transition to the Information Age",
+    PricingType: FixedPrice,
+    LocalPrice: LocalPrice{
+        Amount:   "100.00",
+        Currency: "USD",
+    },
+    RequestedInfo: []string{"name", "email"},
+}
 
-	checkout, err := c.CreateCheckout(checkoutData)
-	if err != nil {
-        panic(err)
-	}
+checkout, err := c.CreateCheckout(checkoutData)
+if err != nil {
+    panic(err)
+}
 
-	fmt.Println(checkout)
+fmt.Println(checkout)
 ```
 ### Update
 ``` go
-	checkoutData := Checkout{
-		Name:        "The Sovereign Individual",
-		Description: "Mastering the Transition to the Information Age",
-		PricingType: FixedPrice,
-		LocalPrice: LocalPrice{
-			Amount:   "100.00",
-			Currency: "USD",
-		},
-		RequestedInfo: []string{"name", "email"},
-	}
+checkoutData := Checkout{
+    Name:        "The Sovereign Individual",
+    Description: "Mastering the Transition to the Information Age",
+    PricingType: FixedPrice,
+    LocalPrice: LocalPrice{
+        Amount:   "100.00",
+        Currency: "USD",
+    },
+    RequestedInfo: []string{"name", "email"},
+}
 
-	checkout, err := c.CreateCheckout(checkoutData)
-	if err != nil {
-		panic(err)
-	}
+checkout, err := c.CreateCheckout(checkoutData)
+if err != nil {
+    panic(err)
+}
 
-	checkout.LocalPrice = LocalPrice{
-		Amount:   "200",
-		Currency: "USD",
-	}
+checkout.LocalPrice = LocalPrice{
+    Amount:   "200",
+    Currency: "USD",
+}
 
-	updatedCheckout, err := c.UpdateCheckout(checkout)
-	if err != nil {
-		panic(err)
-	}
+updatedCheckout, err := c.UpdateCheckout(checkout)
+if err != nil {
+    panic(err)
+}
 
-	fmt.Println(updatedCheckout)
+fmt.Println(updatedCheckout)
 ```
 ### Delete
 ``` go
-	checkoutData := Checkout{
-		Name:        "The Sovereign Individual",
-		Description: "Mastering the Transition to the Information Age",
-		PricingType: FixedPrice,
-		LocalPrice: LocalPrice{
-			Amount:   "100.00",
-			Currency: "USD",
-		},
-		RequestedInfo: []string{"name", "email"},
-	}
+checkoutData := Checkout{
+    Name:        "The Sovereign Individual",
+    Description: "Mastering the Transition to the Information Age",
+    PricingType: FixedPrice,
+    LocalPrice: LocalPrice{
+        Amount:   "100.00",
+        Currency: "USD",
+    },
+    RequestedInfo: []string{"name", "email"},
+}
 
-	checkout, err := c.CreateCheckout(checkoutData)
-	if err != nil {
-		panic(err)
-	}
+checkout, err := c.CreateCheckout(checkoutData)
+if err != nil {
+    panic(err)
+}
 
-	err = c.DeleteCheckout(checkout.ID)
+err = c.DeleteCheckout(checkout.ID)
 
-	if err != nil {
-		panic(err)
-	}
-
+if err != nil {
+    panic(err)
+}
 ```
 ### List
 ``` go
-	checkouts, err := c.ListCheckouts()
-	if err != nil {
-		panic("unexpected error: ", err)
-	}
+checkouts, err := c.ListCheckouts()
+if err != nil {
+    panic("unexpected error: ", err)
+}
 
-	fmt.Println(len(checkouts))
-});
+fmt.Println(len(checkouts))
 ```
 
 ## Charges
@@ -181,45 +179,45 @@ More examples on how to use charges can be found in the [`examples/resources/cha
 
 ### Retrieve
 ``` go
-	charge, err := c.RetrieveCharge("76936406-dac7-45f9-8efd-b7a5f8efa7ee")
-	if err == nil {
-		panic("we should not end up here")
-	}
-    fmt.Println(charge)
+charge, err := c.RetrieveCharge("76936406-dac7-45f9-8efd-b7a5f8efa7ee")
+if err == nil {
+    panic("we should not end up here")
+}
+fmt.Println(charge)
 ```
 ### Create
 ``` go
-    chargeRequest := ChargeRequest{
-		Name:        "The Sovereign Individual",
-		Description: "Mastering the Transition to the Information Age",
-		PricingType: FixedPrice,
-		LocalPrice: LocalPrice{
-			Amount:   "100.00",
-			Currency: "USD",
-		},
-	}
+chargeRequest := ChargeRequest{
+    Name:        "The Sovereign Individual",
+    Description: "Mastering the Transition to the Information Age",
+    PricingType: FixedPrice,
+    LocalPrice: LocalPrice{
+        Amount:   "100.00",
+        Currency: "USD",
+    },
+}
 
-	charge, err := c.CreateCharge(chargeRequest)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(charge)
+charge, err := c.CreateCharge(chargeRequest)
+if err != nil {
+    panic(err)
+}
+fmt.Println(charge)
 ```
 ### List
 ``` go
-	charges, err := c.ListCharges()
-	if err != nil {
-        panic(err)
-	}
+charges, err := c.ListCharges()
+if err != nil {
+    panic(err)
+}
 
-	fmt.Println(len(charges))
+fmt.Println(len(charges))
 ```
 
 ## TODOs
 
-[ ] - Add some mock tests, as coinbase-commerce does not currently have a sandbox
-[ ] - Handle pagination properly
-[ ] - Add Webhook signature verification
+- [ ] Add some mock tests, as coinbase-commerce does not currently have a sandbox
+- [ ] Handle pagination properly
+- [ ] Add Webhook signature verification
 
 License
 ----
