@@ -7,7 +7,22 @@ import (
 
 func TestCheckouts(t *testing.T) {
 	c := NewTestClient()
-	checkouts, err := c.ListCheckouts()
+	checkouts, err := c.ListCheckouts(nil)
+	if err != nil {
+		t.Fatal("unexpected error: ", err)
+	}
+
+	fmt.Println(len(checkouts))
+	return
+
+}
+
+func TestCheckoutsWithPagination(t *testing.T) {
+	c := NewTestClient()
+	p := &Pagination{
+		Limit: 2,
+	}
+	checkouts, err := c.ListCheckouts(p)
 	if err != nil {
 		t.Fatal("unexpected error: ", err)
 	}

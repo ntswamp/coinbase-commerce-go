@@ -7,7 +7,22 @@ import (
 
 func TestCharges(t *testing.T) {
 	c := NewTestClient()
-	charges, err := c.ListCharges()
+	charges, err := c.ListCharges(nil)
+	if err != nil {
+		t.Fatal("unexpected error: ", err)
+	}
+
+	fmt.Println(len(charges))
+	return
+
+}
+
+func TestChargesWithPagination(t *testing.T) {
+	c := NewTestClient()
+	p := &Pagination{
+		Limit: 2,
+	}
+	charges, err := c.ListCharges(p)
 	if err != nil {
 		t.Fatal("unexpected error: ", err)
 	}
