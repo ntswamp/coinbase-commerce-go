@@ -1,6 +1,14 @@
 package coinbase
 
-import "time"
+import (
+	"bytes"
+	"crypto/hmac"
+	"crypto/sha256"
+	"errors"
+	"io/ioutil"
+	"net/http"
+	"time"
+)
 
 type WebhookEvent struct {
 	ID           int       `json:"id"`
@@ -32,4 +40,31 @@ type WebhookEvent struct {
 			} `json:"addresses"`
 		} `json:"data"`
 	} `json:"event"`
+}
+
+func verify(sharedKey, signature, payload []byte) bool {
+	mac := hmac.New(sha256.New, sharedKey)
+	mac.Write(payload)
+	expectedMAC := mac.Sum(nil)
+	return hmac.Equal(expectedMAC, signature)
+}
+
+func VerifyWebhookSignatureFromRequest(sharedKey string, r *http.Request) (bool, error) {
+	signature := r.Header.Get("X-CC-Webhook-Signature")
+
+	if signature == "" {
+		return false, errors.New("webhook signature is missing from the request")
+	}
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return false, err
+	}
+	r.Body = ioutil.NopCloser(bytes.NewReader(body))
+
+	return VerifyWebhookSignature(sharedKey, signature, body)
+}
+
+func VerifyWebhookSignature(sharedKey, signature string, body []byte) (bool, error) {
+	return verify([]byte(sharedKey), []byte(signature), body), nil
 }
