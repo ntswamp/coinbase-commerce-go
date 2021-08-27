@@ -11,7 +11,7 @@ import (
 )
 
 type WebhookEvent struct {
-	ID           int       `json:"id"`
+	ID           string       `json:"id"`
 	ScheduledFor time.Time `json:"scheduled_for"`
 	Event        struct {
 		ID         string    `json:"id"`
