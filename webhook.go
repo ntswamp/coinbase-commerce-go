@@ -33,7 +33,7 @@ type WebhookEvent struct {
 			Metadata struct {
 			} `json:"metadata"`
 			PricingType string        `json:"pricing_type"`
-			Payments    []interface{} `json:"payments"`
+			Payments    []Payment `json:"payments"`
 			Addresses   struct {
 				Bitcoin  string `json:"bitcoin"`
 				Ethereum string `json:"ethereum"`
